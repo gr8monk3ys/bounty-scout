@@ -124,3 +124,17 @@ class TestRefIdentity:
         b = "all tests passing in emulator in CI with MOCKGPU_ARCH=cdna4"
         ref = lambda d: "tinygrad#" + hashlib.sha256(d.encode()).hexdigest()[:10]
         assert ref(a) != ref(b)
+
+
+class TestExternalWinRate:
+    """Measured payout reality, not the board's description of itself."""
+
+    def test_expensify_is_discounted_for_an_automated_contributor_seat(self):
+        # 60 closed Help Wanted issues: 7 payment summaries, 5 to reviewers/C+,
+        # 0 to an external contributor. MelvinBot proposes first and implements.
+        rate = score.money_score(mk(source="expensify", amount_usd=250), 8, TODAY)
+        assert rate == pytest.approx(250 / 8 * score.EXTERNAL_WIN_RATE["expensify"])
+
+    def test_boards_that_demonstrably_pay_outsiders_are_undiscounted(self):
+        rate = score.money_score(mk(source="tinygrad", amount_usd=500), 16, TODAY)
+        assert rate == pytest.approx(500 / 16)

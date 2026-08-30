@@ -48,6 +48,29 @@ SOURCE_SIGNAL = {
 }
 DEFAULT_SOURCE_SIGNAL = 0.30
 
+# The share of a board's payouts that actually reach an OUTSIDE contributor,
+# measured from closed issues rather than assumed from the board's own docs.
+#
+# Expensify is 0.05 because its contributor seat is largely automated. MelvinBot
+# posts the first proposal and is reviewed first; contributors may only propose a
+# "meaningfully different" approach; Melvin then implements and the Contributor+
+# owns the PR. Measured 2026-08-30 across the 60 most recently closed Help Wanted
+# issues: 7 carried a payment summary, 5 paid a reviewer/C+, and NONE recorded an
+# external contributor as owed. Live queue entries read "Contributor: @x does not
+# require payment (Contractor)" beside "Reviewer: @y owed $250".
+#
+# It is not 0.0 because only 7 of 60 recorded a summary at all and Expensify also
+# pays through Upwork, which leaves no GitHub trace — absence of evidence, not
+# evidence of absence. But a board whose visible payouts never reach an outsider
+# must not outrank one whose payouts demonstrably do.
+EXTERNAL_WIN_RATE = {
+    "expensify": 0.05,
+    "comma": 1.0,
+    "tinygrad": 1.0,
+    "tenstorrent": 1.0,
+}
+DEFAULT_EXTERNAL_WIN_RATE = 1.0
+
 # A bounty seen for the first time in the last few days has not yet been found
 # by everyone else. Competition counts lag reality by roughly this long, so
 # newness is scored directly instead of being inferred from a stale count.
@@ -111,7 +134,8 @@ def money_score(b, hours: float, today: dt.date | None = None) -> float | None:
         return 0.0
     if hours <= 0:
         return 0.0
-    return (b.amount_usd / hours) / (1 + max(0, b.competitors))
+    payout = EXTERNAL_WIN_RATE.get(b.source, DEFAULT_EXTERNAL_WIN_RATE)
+    return (b.amount_usd / hours) / (1 + max(0, b.competitors)) * payout
 
 
 def signal_score(b, today: dt.date | None = None) -> float:
