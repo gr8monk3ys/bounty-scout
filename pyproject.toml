@@ -1,0 +1,12 @@
+[project]
+name = "bounty-scout"
+version = "0.1.0"
+description = "Rank live open-source bounties by expected value and hiring signal"
+requires-python = ">=3.11"
+dependencies = []          # stdlib only at runtime; it runs uninstalled
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
