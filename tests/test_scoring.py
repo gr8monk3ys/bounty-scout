@@ -119,7 +119,6 @@ class TestRefIdentity:
     def test_near_identical_titles_get_distinct_refs(self):
         # Two live tinygrad rows differ only at "MOCKGPU_ARCH=rdna4" vs
         # "cdna4", well past any sensible prefix truncation.
-        from sources import tinygrad  # noqa
         import hashlib
         a = "all tests passing in emulator in CI with MOCKGPU_ARCH=rdna4"
         b = "all tests passing in emulator in CI with MOCKGPU_ARCH=cdna4"

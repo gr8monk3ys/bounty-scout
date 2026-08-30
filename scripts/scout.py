@@ -11,6 +11,7 @@ Usage:
     python3 scripts/scout.py --all-hardware     # include gated work
     python3 scripts/scout.py --json             # machine-readable
     python3 scripts/scout.py --no-model         # never call Claude for estimates
+    python3 scripts/scout.py --new-only         # only bounties not seen before
 """
 
 import argparse
@@ -64,8 +65,15 @@ def collect(warnings: list) -> list:
 
 
 def enrich(bounties, today, allow_model=True):
-    """Attach first-seen dates and effort, then both scores."""
+    """Attach first-seen dates and effort, then both scores.
+
+    Returns (rows, known_before) where known_before is the set of refs the state
+    file held BEFORE this run. `--new-only` must diff against that, not against
+    today's date: two runs on the same day would otherwise both call the whole
+    board new, which is precisely the noise a scheduled loop cannot tolerate.
+    """
     seen = load_seen()
+    known_before = set(seen)
     first_run = not seen        # nothing is comparatively new on run one
     stamp = today.isoformat()
     cache = estimate.load_cache()
@@ -91,7 +99,7 @@ def enrich(bounties, today, allow_model=True):
         })
     save_seen(seen)
     estimate.save_cache(cache)
-    return rows
+    return rows, known_before
 
 
 def _line(r) -> str:
@@ -163,6 +171,11 @@ def main() -> int:
     ap.add_argument("--all-hardware", action="store_true")
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--no-model", action="store_true")
+    ap.add_argument("--new-only", action="store_true",
+                    help="report only bounties first seen this run; exit 3 when "
+                         "there are none. Intended for a scheduled loop, where "
+                         "the whole board every run is noise and a newly posted, "
+                         "uncontested bounty is the only thing worth waking for.")
     args = ap.parse_args()
 
     today = dt.date.today()
@@ -177,7 +190,7 @@ def main() -> int:
             print(f"  {w}", file=sys.stderr)
         return 1
 
-    rows = enrich(bounties, today, allow_model=not args.no_model)
+    rows, known_before = enrich(bounties, today, allow_model=not args.no_model)
 
     if args.json:
         print(json.dumps([{
@@ -190,6 +203,14 @@ def main() -> int:
             "signal": r["signal"], "first_seen": r["b"].first_seen,
         } for r in rows], indent=2))
         return 0
+
+    if args.new_only:
+        fresh = [r for r in rows if r["b"].ref not in known_before]
+        if not fresh:
+            print(f"no new bounties across {len(ADAPTERS)} boards "
+                  f"({len(rows)} tracked, unchanged)")
+            return 3
+        rows = fresh
 
     text = report(rows, warnings, owned, today)
     print(text)
