@@ -4,3 +4,4 @@ __pycache__/
 state/estimates.json
 state/seen.json
 runs/
+state/proposals.json
