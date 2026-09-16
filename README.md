@@ -58,6 +58,24 @@ label search: roughly 10 of 27 bounties, no hardware gates at all, and a price
 only where the title repeats one. It warns loudly rather than reporting a short
 board as a complete one.
 
+## Measured payout reality
+
+A board's own documentation describes how it *intends* to pay outsiders, which
+is not the same as what it does. `EXTERNAL_WIN_RATE` in `scripts/score.py` holds
+the measured version.
+
+Expensify sits at 0.05. Its contributor seat is largely automated: MelvinBot
+posts the first proposal and is reviewed first, contributors may only propose a
+"meaningfully different" approach, and Melvin then implements while the
+Contributor+ owns the PR. Across the 60 most recently closed `Help Wanted`
+issues on 2026-08-30, seven carried a payment summary, five paid a reviewer or
+C+, and none recorded an external contributor as owed. Live queue entries read
+`Contributor: @x does not require payment (Contractor)` beside
+`Reviewer: @y owed $250`.
+
+Not zero, because only 7 of 60 recorded a summary and Expensify also pays via
+Upwork, which leaves no GitHub trace. Re-measure before trusting it.
+
 ## Known limits
 
 - **tinygrad lock state is cell colour**, which CSV export drops. The
