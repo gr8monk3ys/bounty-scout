@@ -69,3 +69,5 @@ board as a complete one.
   the availability signal.
 - **Algora orgs are not covered.** Client-rendered, and the boards are dormant —
   tscircuit and Cal.com have both gone three months without a new bounty.
+- **`attempts/` holds abandoned bounty attempts and their measurements;** nothing
+  there is runnable from this repo.
