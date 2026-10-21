@@ -1,0 +1,30 @@
+diff --git a/test/mockgpu/helpers.py b/test/mockgpu/helpers.py
+index 1d3a864..9ba8743 100644
+--- a/test/mockgpu/helpers.py
++++ b/test/mockgpu/helpers.py
+@@ -1,11 +1,19 @@
+ import ctypes
+-from tinygrad.runtime.support import c
+ 
+-gpuocelot_lib = c.DLL("ocelot", "gpuocelot")
+-@gpuocelot_lib.bind(None, ctypes.c_char_p, ctypes.c_int, ctypes.POINTER(ctypes.c_void_p), ctypes.c_int, ctypes.c_int, ctypes.c_int,
+-                    ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int)
+-def ptx_run(source:bytes, n_args:int, args:c.POINTER[ctypes.c_void_p], blck_x:int, blck_y:int, blck_z:int,
+-            grid_x:int, grid_y:int, grid_z:int, shared_mem_size:int): pass
++def ptx_run(source, n_args:int, args, blck_x:int, blck_y:int, blck_z:int,
++            grid_x:int, grid_y:int, grid_z:int, shared_mem_size:int):
++  """Execute a PTX kernel in the Python emulator.
++
++  This replaced a ctypes binding to libgpuocelot, an unmaintained native library
++  that CI downloaded as a prebuilt binary and macOS contributors had to build
++  from source with cmake, ninja and bison. Its absence did not raise -- the
++  binding was lazy, so a missing library segfaulted the interpreter with no
++  message at all.
++  """
++  from test.mockgpu.nv.ptx_emu import run
++  src = source.value if isinstance(source, ctypes.c_char_p) else bytes(source)
++  return run(src, [args[i] or 0 for i in range(n_args)], (blck_x, blck_y, blck_z),
++             (grid_x, grid_y, grid_z), shared_mem_size)
+ 
+ class PythonRemu:
+   """Python RDNA3/RDNA4 emulator wrapper used by mockgpu."""
