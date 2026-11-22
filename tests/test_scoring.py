@@ -1,14 +1,15 @@
 """Regression tests. Every case here is a defect the first live run produced."""
 
 import datetime as dt
-import sys, pathlib
+import pathlib
+import sys
+
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / "scripts"))
 
-import pytest
 import estimate
+import pytest
 import score
-from bounty import (HARDWARE_NONE, STATUS_LOCKED, STATUS_OPEN, Bounty,
-                    parse_amount)
+from bounty import HARDWARE_NONE, STATUS_LOCKED, STATUS_OPEN, Bounty, parse_amount
 
 TODAY = dt.date(2026, 8, 30)
 
@@ -122,7 +123,8 @@ class TestRefIdentity:
         import hashlib
         a = "all tests passing in emulator in CI with MOCKGPU_ARCH=rdna4"
         b = "all tests passing in emulator in CI with MOCKGPU_ARCH=cdna4"
-        ref = lambda d: "tinygrad#" + hashlib.sha256(d.encode()).hexdigest()[:10]
+        def ref(d):
+            return "tinygrad#" + hashlib.sha256(d.encode()).hexdigest()[:10]
         assert ref(a) != ref(b)
 
 

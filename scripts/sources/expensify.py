@@ -37,6 +37,7 @@ import pathlib
 import re
 
 from bounty import HARDWARE_NONE, STATUS_OPEN, Bounty, parse_amount
+
 from sources import SourceError, gh_json, guard_count
 
 # Contributors post under a "## Proposal" heading; the level varies.

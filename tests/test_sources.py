@@ -1,6 +1,8 @@
 """Adapter guards. These protect the failure mode, not the happy path."""
 
-import sys, pathlib
+import pathlib
+import sys
+
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / "scripts"))
 
 import pytest

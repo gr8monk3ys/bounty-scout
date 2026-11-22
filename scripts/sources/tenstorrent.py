@@ -7,6 +7,7 @@ read, and marked as such.
 """
 
 from bounty import HARDWARE_SILICON, STATUS_LOCKED, STATUS_OPEN, Bounty, parse_amount
+
 from sources import gh_json, guard_count
 from sources._github import crossref_pr_count
 

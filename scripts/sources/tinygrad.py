@@ -13,8 +13,8 @@ import hashlib
 import io
 import urllib.request
 
-from bounty import (HARDWARE_GPU, HARDWARE_NONE, STATUS_LOCKED, STATUS_OPEN,
-                    Bounty)
+from bounty import HARDWARE_GPU, HARDWARE_NONE, STATUS_LOCKED, STATUS_OPEN, Bounty
+
 from sources import SourceError, guard_count
 
 SHEET = "1WKHbT-7KOgjEawq5h5Ic1qUWzpfAzuD_J06N1JwOCGs"
