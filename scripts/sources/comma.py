@@ -13,9 +13,17 @@ warn. Fix with:  gh auth refresh -s read:project
 
 import json
 
-from bounty import (HARDWARE_CAR, HARDWARE_DEVICE, HARDWARE_NONE,
-                    HARDWARE_UNKNOWN, STATUS_LOCKED, STATUS_OPEN, Bounty,
-                    parse_amount)
+from bounty import (
+    HARDWARE_CAR,
+    HARDWARE_DEVICE,
+    HARDWARE_NONE,
+    HARDWARE_UNKNOWN,
+    STATUS_LOCKED,
+    STATUS_OPEN,
+    Bounty,
+    parse_amount,
+)
+
 from sources import SourceError, gh_json, guard_count, run_gh
 from sources._github import crossref_pr_count
 
